@@ -53,6 +53,15 @@ function gulpAudioSprite(options) {
 function convertData(data, options, self) {
     var urls = data.urls || data.resources || (data.src ? [data.src] : []) || [];
 
+    if (options.format == 'createjs') {
+        urls = [];
+        var extentions = options.export.split(',');
+        for (var i = 0; i < extentions.length; i++) {
+            var ext = extentions[i];
+            urls.push(data.src.replace(new RegExp('\\.' + extentions[0] + '$'), '.' + ext));
+        }
+    }
+
     urls.forEach(function(url) {
         self.push(new gutil.File({
             base: path.dirname(url),
@@ -81,6 +90,8 @@ function convertData(data, options, self) {
 
 function setDefaults(options) {
     options = options || {};
+
+    if (!options.export) options.export = 'ogg,m4a,mp3,ac3'
 
     var tmp = require('os').tmpDir() || '.';
     options.output = tmp + '/' + (options.output ? options.output : 'sprite');
